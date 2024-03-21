@@ -11,7 +11,7 @@ resource "aws_eks_node_group" "eks_ng_public" {
   instance_types = ["t2.xlarge"]
 
   remote_access {
-    ec2_ssh_key = "root-server2-london"
+    ec2_ssh_key = "nginix"
   }
 
   scaling_config {
