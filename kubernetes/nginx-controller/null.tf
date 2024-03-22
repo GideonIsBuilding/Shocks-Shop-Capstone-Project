@@ -7,6 +7,7 @@ resource "null_resource" "get_nlb_hostname" {
   ]
 }
 
+# Define Route53 zone (modify name if needed)
 data "local_file" "lb_hostname" {
   filename = "${path.module}/lb_hostname.txt"
   depends_on = [
@@ -14,6 +15,7 @@ data "local_file" "lb_hostname" {
   ]
 }
 
+# Define Route53 zone (modify name if needed)
 resource "aws_route53_zone" "hosted_zone" {
   name = var.domain_name
   tags = {
@@ -21,6 +23,7 @@ resource "aws_route53_zone" "hosted_zone" {
   }
 }
 
+# Define application instances (modify names if needed)
 locals {
   instances = {
     namea = "sock-shop.${var.domain_name}"
@@ -28,6 +31,7 @@ locals {
   }
 }
 
+# Create CNAME records for application instances pointing to NLB
 resource "aws_route53_record" "C-record" {
   for_each        = local.instances
   allow_overwrite = true
@@ -43,17 +47,18 @@ resource "aws_route53_record" "C-record" {
 
 }
 
+# Generate private key for certificate
 resource "tls_private_key" "private_key" {
   algorithm = "RSA"
 }
 
-
+# Register account with Let's Encrypt
 resource "acme_registration" "registration" {
   account_key_pem = tls_private_key.private_key.private_key_pem
   email_address   = "galosikhena@gmail.com"
 }
 
-
+# Obtain certificate using Let's Encrypt with Route53 DNS challenge
 resource "acme_certificate" "certificate" {
   account_key_pem           = acme_registration.registration.account_key_pem
   common_name               = var.domain_name
@@ -63,12 +68,12 @@ resource "acme_certificate" "certificate" {
     provider = "route53"
 
     config = {
-      AWS_HOSTED_ZONE_ID = data.aws_route53_zone.hosted_zone.zone_id
+      AWS_HOSTED_ZONE_ID = aws_route53_zone.hosted_zone.zone_id
     }
   }
 }
 
-
+# Import obtained certificate into AWS ACM
 resource "aws_acm_certificate" "certificate" {
   certificate_body  = acme_certificate.certificate.certificate_pem
   private_key       = acme_certificate.certificate.private_key_pem
