@@ -1,17 +1,17 @@
 resource "null_resource" "get_nlb_hostname" {
-    provisioner "local-exec" {
-        command = "aws eks update-kubeconfig --name hr-dev-eks-demo --region us-east-1 && kubectl get svc load-nginx  --namespace nginx-ingress -o jsonpath='{.status.loadBalancer.ingress[*].hostname}' > ${path.module}/lb_hostname.txt"
-    }
-    depends_on = [
-      helm_release.ingress_nginx
-    ]
+  provisioner "local-exec" {
+    command = "aws eks update-kubeconfig --name hr-dev-eks-demo --region us-east-1 && kubectl get svc load-nginx  --namespace nginx-ingress -o jsonpath='{.status.loadBalancer.ingress[*].hostname}' > ${path.module}/lb_hostname.txt"
+  }
+  depends_on = [
+    helm_release.ingress_nginx
+  ]
 }
 
-data "local_file" "lb_hostname"{
-    filename = "${path.module}/lb_hostname.txt"
-    depends_on = [
-      null_resource.get_nlb_hostname
-    ]
+data "local_file" "lb_hostname" {
+  filename = "${path.module}/lb_hostname.txt"
+  depends_on = [
+    null_resource.get_nlb_hostname
+  ]
 }
 
 resource "aws_route53_zone" "hosted_zone" {
@@ -35,7 +35,7 @@ resource "aws_route53_record" "C-record" {
   name            = each.value
   ttl             = 300
   type            = "CNAME"
-  records          = [data.local_file.lb_hostname.content]
+  records         = [data.local_file.lb_hostname.content]
 
   depends_on = [
     data.local_file.lb_hostname
@@ -43,39 +43,30 @@ resource "aws_route53_record" "C-record" {
 
 }
 
+resource "tls_private_key" "private_key" {
+  algorithm = "RSA"
+}
 
-resource "aws_acm_certificate" "acm_certificate" {
-  domain_name               = var.domain_name
+
+resource "acme_registration" "registration" {
+  account_key_pem = tls_private_key.private_key.private_key_pem
+  email_address   = "galosikhena@gmail.com"
+}
+
+
+resource "acme_certificate" "certificate" {
+  account_key_pem           = acme_registration.registration.account_key_pem
+  common_name               = var.domain_name
   subject_alternative_names = [var.alt_domain_name]
-  validation_method         = "DNS"
 
-  lifecycle {
-    create_before_destroy = true
+  dns_challenge {
+    provider = "route53"
   }
 }
 
-resource "aws_route53_record" "route53_record" {
-    depends_on = [
-      aws_route53_record.C-record
-    ]
 
-  for_each = {
-    for dvo in aws_acm_certificate.acm_certificate.domain_validation_options : dvo.domain_name => {
-      name   = dvo.resource_record_name
-      record = dvo.resource_record_value
-      type   = dvo.resource_record_type
-    }
-  }
-
-  allow_overwrite = true
-  name            = each.value.name
-  records         = [each.value.record]
-  ttl             = 60
-  type            = each.value.type
-  zone_id         = aws_route53_zone.hosted_zone.zone_id
-}
-
-resource "aws_acm_certificate_validation" "acm_certificate_validation" {
-  certificate_arn         = aws_acm_certificate.acm_certificate.arn
-  validation_record_fqdns = [for record in aws_route53_record.route53_record : record.fqdn]
+resource "aws_acm_certificate" "certificate" {
+  certificate_body  = acme_certificate.certificate.certificate_pem
+  private_key       = acme_certificate.certificate.private_key_pem
+  certificate_chain = acme_certificate.certificate.issuer_pem
 }

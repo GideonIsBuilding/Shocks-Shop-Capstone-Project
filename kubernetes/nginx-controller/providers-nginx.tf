@@ -14,9 +14,18 @@ terraform {
       source  = "gavinbunney/kubectl"
       version = "1.14.0"
     }
+
+    acme = {
+      source  = "vancluever/acme"
+      version = "~> 2.0"
+    }
   }
 }
 
+
+provider "acme" {
+  server_url = "https://acme-staging-v02.api.letsencrypt.org/directory"
+}
 
 data "aws_eks_cluster" "hr-dev-eks-demo" {
   name = "hr-dev-eks-demo"
