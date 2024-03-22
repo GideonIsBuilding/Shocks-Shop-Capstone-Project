@@ -9,3 +9,7 @@ variable "alt_domain_name" {
   type        = string
   default     = "*.osikhena.com"
 }
+
+variable "acme_challenge_aws_access_key_id" {}
+variable "acme_challenge_aws_secret_access_key" {}
+variable "acme_challenge_aws_region" {}

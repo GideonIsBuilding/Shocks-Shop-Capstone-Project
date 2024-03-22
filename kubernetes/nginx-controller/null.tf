@@ -54,12 +54,14 @@ resource "tls_private_key" "private_key" {
 
 # Register account with Let's Encrypt
 resource "acme_registration" "registration" {
+  server_url      = var.domain_name
   account_key_pem = tls_private_key.private_key.private_key_pem
   email_address   = "galosikhena@gmail.com"
 }
 
 # Obtain certificate using Let's Encrypt with Route53 DNS challenge
 resource "acme_certificate" "certificate" {
+  server_url                = var.domain_name
   account_key_pem           = acme_registration.registration.account_key_pem
   common_name               = var.domain_name
   subject_alternative_names = [var.alt_domain_name]
@@ -67,10 +69,23 @@ resource "acme_certificate" "certificate" {
   dns_challenge {
     provider = "route53"
 
+    # Without this explicit config, the ACME provider (which uses lego
+    # under the covers) will look for environment variables to use. 
+    # These environment variable names happen to overlap with the names
+    # also required by the native Terraform AWS provider, however is not 
+    # guaranteed. You may want to explicitly configure them here if you
+    # would like to use different credentials to those used by the main
+    # Terraform provider
     config = {
-      AWS_HOSTED_ZONE_ID = aws_route53_zone.hosted_zone.zone_id
+      AWS_ACCESS_KEY_ID     = "${var.acme_challenge_aws_access_key_id}"
+      AWS_SECRET_ACCESS_KEY = "${var.acme_challenge_aws_secret_access_key}"
+      AWS_REGION            = "${var.acme_challenge_aws_region}"
     }
   }
+}
+
+data "aws_credentials" "acme_challenge" {
+  name = "acme_challenge"
 }
 
 # Import obtained certificate into AWS ACM
