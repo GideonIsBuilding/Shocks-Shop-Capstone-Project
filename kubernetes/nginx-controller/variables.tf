@@ -1,13 +1,13 @@
 variable "domain_name" {
   description = "This is the domain name"
   type        = string
-  default     = "osikhena.xyz"
+  default     = "osikhena.com"
 }
 
 variable "alt_domain_name" {
   description = "This is the alternative domain name"
   type        = string
-  default     = "*.osikhena.xyz"
+  default     = "*.osikhena.com"
 }
 
 variable "acme_challenge_aws_access_key_id" {}
