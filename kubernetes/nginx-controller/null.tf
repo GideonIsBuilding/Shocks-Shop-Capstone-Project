@@ -54,6 +54,11 @@ resource "acme_registration" "registration" {
 }
 
 
+data "aws_route53_zone" "base_domain" {
+  name         = "${var.domain_name}."
+}
+
+
 resource "acme_certificate" "certificate" {
   account_key_pem           = acme_registration.registration.account_key_pem
   common_name               = var.domain_name
@@ -61,10 +66,10 @@ resource "acme_certificate" "certificate" {
 
   dns_challenge {
     provider = "route53"
-  }
 
-  config = {
-    AWS_HOSTED_ZONE_ID = data.aws_route53_zone.hosted_zone.zone_id
+    config = {
+      AWS_HOSTED_ZONE_ID = data.aws_route53_zone.base_domain.zone_id
+    }
   }
 }
 
