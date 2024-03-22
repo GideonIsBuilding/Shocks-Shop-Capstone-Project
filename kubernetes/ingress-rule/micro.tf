@@ -12,7 +12,7 @@ resource "kubernetes_ingress_v1" "micro-ingress" {
 
   spec {
     rule {
-      host = "gideon-aleonogwe.capstone.com"
+      host = "gideon-aleonogwe.osikhena.com"
       http {
         path {
           backend {
