@@ -23,6 +23,12 @@ resource "aws_route53_zone" "hosted_zone" {
   }
 }
 
+# Fetch the hosted zone ID for osikhena.com
+data "aws_route53_zone" "selected" {
+  name         = "osikhena.com."
+  private_zone = false
+}
+
 # Define application instances (modify names if needed)
 locals {
   instances = {
