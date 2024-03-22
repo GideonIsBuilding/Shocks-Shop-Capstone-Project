@@ -58,14 +58,17 @@ pipeline {
             }
             steps {
                 script {
-                    dir('kubernetes/nginx-controller') {
-                        sh '''
-                        export TF_VAR_acme_challenge_aws_access_key_id=$AWS_ACCESS_KEY_ID
-                        export TF_VAR_acme_challenge_aws_secret_access_key=$AWS_SECRET_ACCESS_KEY
-                        export TF_VAR_acme_challenge_aws_region=$AWS_DEFAULT_REGION
-                        terraform init
-                        terraform apply -auto-approve
-                        '''
+                    withEnv([
+                        "TF_VAR_acme_challenge_aws_access_key_id=${env.AWS_ACCESS_KEY_ID}",
+                        "TF_VAR_acme_challenge_aws_secret_access_key=${env.AWS_SECRET_ACCESS_KEY}",
+                        "TF_VAR_acme_challenge_aws_region=${env.AWS_DEFAULT_REGION}"
+                    ]) {
+                        dir('kubernetes/nginx-controller') {
+                            sh '''
+                            terraform init
+                            terraform apply -auto-approve
+                            '''
+                        }
                     }
                 }
             }
