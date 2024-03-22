@@ -60,10 +60,10 @@ pipeline {
                 script {
                     dir('kubernetes/nginx-controller') {
                         sh '''
-                        export TF_VAR_acme_challenge_aws_access_key_id=$AWS_ACCESS_KEY_ID'
-                        export TF_VAR_acme_challenge_aws_secret_access_key=$AWS_SECRET_ACCESS_KEY'
-                        export TF_VAR_acme_challenge_aws_region=$AWS_DEFAULT_REGION'
-                        terraform init'
+                        export TF_VAR_acme_challenge_aws_access_key_id=$AWS_ACCESS_KEY_ID
+                        export TF_VAR_acme_challenge_aws_secret_access_key=$AWS_SECRET_ACCESS_KEY
+                        export TF_VAR_acme_challenge_aws_region=$AWS_DEFAULT_REGION
+                        terraform init
                         terraform apply -auto-approve
                         '''
                     }
