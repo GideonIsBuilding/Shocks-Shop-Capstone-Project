@@ -62,6 +62,10 @@ resource "acme_certificate" "certificate" {
   dns_challenge {
     provider = "route53"
   }
+
+  config = {
+    AWS_HOSTED_ZONE_ID = data.aws_route53_zone.hosted_zone.zone_id
+  }
 }
 
 
