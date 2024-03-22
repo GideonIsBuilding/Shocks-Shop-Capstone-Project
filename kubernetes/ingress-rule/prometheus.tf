@@ -12,7 +12,7 @@ resource "kubernetes_ingress_v1" "prome-ingress" {
 
   spec {
     rule {
-      host = "grafana.osikhena.com"
+      host = "grafana.osikhena.xyz"
       http {
         path {
           backend {
