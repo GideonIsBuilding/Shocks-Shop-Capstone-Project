@@ -25,7 +25,7 @@ resource "aws_route53_zone" "hosted_zone" {
 
 # Fetch the hosted zone ID for osikhena.com
 data "aws_route53_zone" "selected" {
-  name         = var.domain_name
+  name         = var.FQDN
   private_zone = false
 }
 
