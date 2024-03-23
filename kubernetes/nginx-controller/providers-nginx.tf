@@ -39,6 +39,10 @@ provider "aws" {
   region = "us-east-1"
 }
 
+provider "aws" {
+  alias = "dns_zones"
+}
+
 provider "helm" {
   kubernetes {
     config_path = "~/.kube/config"
