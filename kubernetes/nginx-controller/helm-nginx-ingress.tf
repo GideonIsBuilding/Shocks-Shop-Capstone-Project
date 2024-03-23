@@ -1,10 +1,10 @@
 resource "time_sleep" "wait_for_kubernetes" {
 
-    depends_on = [
-        data.aws_eks_cluster.hr-dev-eks-demo
-    ]
+  depends_on = [
+    data.aws_eks_cluster.hr-dev-eks-demo
+  ]
 
-    create_duration = "20s"
+  create_duration = "20s"
 }
 
 resource "kubernetes_namespace" "nginx-namespace" {
@@ -30,12 +30,12 @@ resource "helm_release" "ingress_nginx" {
   ]
 
   set {
-    name = "fullnameOverride"
+    name  = "fullnameOverride"
     value = "load"
   }
 
   set {
-    name = "controller.name"
+    name  = "controller.name"
     value = "nginx"
   }
 
@@ -44,7 +44,7 @@ resource "helm_release" "ingress_nginx" {
     value = "LoadBalancer"
   }
 
- set {
+  set {
     name  = "podSecurityPolicy.enabled"
     value = true
   }
@@ -66,6 +66,6 @@ resource "helm_release" "ingress_nginx" {
         memory = "30Mi"
       }
     })
-  } 
-  
+  }
+
 }

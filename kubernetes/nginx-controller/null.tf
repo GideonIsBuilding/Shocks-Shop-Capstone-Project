@@ -80,11 +80,11 @@ resource "acme_certificate" "certificate" {
     # guaranteed. You may want to explicitly configure them here if you
     # would like to use different credentials to those used by the main
     # Terraform provider
-    config = {
-      AWS_ACCESS_KEY_ID     = "${var.acme_challenge_aws_access_key_id}"
-      AWS_SECRET_ACCESS_KEY = "${var.acme_challenge_aws_secret_access_key}"
-      AWS_REGION            = "${var.acme_challenge_aws_region}"
-    }
+    # config = {
+    #   AWS_ACCESS_KEY_ID     = "${var.acme_challenge_aws_access_key_id}"
+    #   AWS_SECRET_ACCESS_KEY = "${var.acme_challenge_aws_secret_access_key}"
+    #   AWS_REGION            = "${var.acme_challenge_aws_region}"
+    # }
   }
 }
 
