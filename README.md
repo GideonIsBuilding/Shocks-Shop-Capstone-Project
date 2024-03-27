@@ -15,6 +15,4 @@ The Socks Shop application is deployed on a Kubernetes cluster using Terraform, 
 - Check to see if it has provisioned 
 ![Successful EKS Cluster Provision](./images/EKS%20Cluster.png)
 - Next, setup the application deployment pipeline using the `Jenkinsfile` file to deploy the application.
-
-### Note
-The domain registeration of the domain name is still in progress and I am currently in contact with the AWS support team to hasten the process as my account is currently under review before the domain is validated. Thank you!
+![Successful Spp Deployment](./images/Deploy%20Socks%20Shop.png)
