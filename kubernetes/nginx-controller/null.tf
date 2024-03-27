@@ -23,7 +23,7 @@ resource "aws_route53_zone" "hosted_zone" {
   }
 }
 
-# Fetch the hosted zone ID for osikhena.com
+# Fetch the hosted zone ID for osikhena.click
 data "aws_route53_zone" "selected" {
   provider     = aws.dns_zones
   name         = var.FQDN
